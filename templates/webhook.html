@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook Data Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 80%;
+            margin: 20px 0;
+            background-color: #fff;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid black;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div>
+        <h1>Webhook Data</h1>
+        <table id="webhook-table">
+            <thead>
+                <tr>
+                    <th>Request ID</th>
+                    <th>Author</th>
+                    <th>Action</th>
+                    <th>From Branch</th>
+                    <th>To Branch</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        async function fetchWebhookData() {
+            try {
+                const response = await fetch('https://action-webhook.onrender.com/webhook/receiver');
+                const data = await response.json();
+
+                const tableBody = document.querySelector('#webhook-table tbody');
+                tableBody.innerHTML = '';
+
+                data.forEach(item => {
+                    const row = `
+                        <tr>
+                            <td>${item.request_id || 'N/A'}</td>
+                            <td>${item.author || 'N/A'}</td>
+                            <td>${item.action || 'N/A'}</td>
+                            <td>${item.from_branch || 'N/A'}</td>
+                            <td>${item.to_branch || 'N/A'}</td>
+                            <td>${item.timestamp || 'N/A'}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        }
+
+        setInterval(fetchWebhookData, 15000);
+
+        window.onload = fetchWebhookData;
+    </script>
+
+</body>
+
+</html>
